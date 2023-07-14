@@ -1,137 +1,154 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>idk</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-
-    #container {
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-    }
-
-    form {
-      display: flex;
-      margin-bottom: 20px;
-    }
-
-    input[type="text"], input[type="number"] {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-    }
-
-    input[type="submit"] {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    li {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      background-color: #f4f4f4;
-      padding: 10px;
-    }
-
-    .item-name {
-      flex: 1;
-      font-weight: bold;
-    }
-
-    .quantity {
-      background-color: #4CAF50;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      margin-left: 10px;
-    }
-
-    .button-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    #clearButton {
-      background-color: #FF4136;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+    <title>Shopping List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        
+        #container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"], input[type="number"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background-color: #f4f4f4;
+            padding: 10px;
+        }
+        
+        .item-name {
+            flex: 1;
+            font-weight: bold;
+        }
+        
+        .quantity {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #clearButton {
+            background-color: #FF4136;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<div id="container">
-  <h1>Shopping List</h1>
+    <div id="container">
+        <h1>Shopping List</h1>
+        
+        <form id="addItemForm">
+            <input type="text" id="itemName" placeholder="Item name" required>
+            <input type="number" id="itemQuantity" placeholder="Quantity" required>
+            <input type="submit" value="Add Item">
+        </form>
+        
+        <ul id="itemList"></ul>
 
-  <form id="addItemForm">
-    <input type="text" id="itemName" placeholder="Item name" required>
-    <input type="number" id="itemQuantity" placeholder="Quantity" required>
-    <input type="submit" value="Add Item">
-  </form>
+        <div class="button-container">
+            <button id="clearButton">Clear Bag</button>
+            <span></span>
+        </div>
+    </div>
 
-  <ul id="itemList"></ul>
-
-  <div class="button-container">
-    <button id="clearButton">Clear Bag</button>
-    <span></span>
-  </div>
-</div>
-
-<script>
-  // Get references to HTML elements
-  const addItemForm = document.getElementById('addItemForm');
-  const itemNameInput = document.getElementById('itemName');
-  const itemQuantityInput = document.getElementById('itemQuantity');
-  const itemList = document.getElementById('itemList');
-  const clearButton = document.getElementById('clearButton');
-
-  // Event listener for form submission
-  addItemForm.addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent form submission
-
-    // Get input values
-    const itemName = itemNameInput.value;
-    const itemQuantity = itemQuantityInput.value;
-
-    // Create a new list item
-    const li = document.createElement('li');
-    li.innerHTML = `
+    <script>
+        // Get references to HTML elements
+        const addItemForm = document.getElementById('addItemForm');
+        const itemNameInput = document.getElementById('itemName');
+        const itemQuantityInput = document.getElementById('itemQuantity');
+        const itemList = document.getElementById('itemList');
+        const clearButton = document.getElementById('clearButton');
+        
+        // Retrieve shopping list items from local storage
+        const storedItems = localStorage.getItem('shoppingListItems');
+        if (storedItems) {
+            itemList.innerHTML = storedItems;
+        }
+        
+        // Event listener for form submission
+        addItemForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            // Get input values
+            const itemName = itemNameInput.value;
+            const itemQuantity = itemQuantityInput.value;
+            
+            // Create a new list item
+            const li = document.createElement('li');
+            li.innerHTML = `
                 <span class="item-name">${itemName}</span>
                 <span class="quantity">${itemQuantity}</span>
             `;
-
-    // Add the list item to the list
-    itemList.appendChild(li);
-
-    // Clear input fields
-    itemNameInput.value = '';
-    itemQuantityInput.value = '';
-  });
-
-  // Event listener for Clear Bag button click
-  clearButton.addEventListener('click', function() {
-    itemList.innerHTML = ''; // Clear all items from the list
-  });
-</script>
+            
+            // Add the list item to the list
+            itemList.appendChild(li);
+            
+            // Clear input fields
+            itemNameInput.value = '';
+            itemQuantityInput.value = '';
+            
+            // Save the updated shopping list items to local storage
+            saveItemsToLocalStorage();
+        });
+        
+        // Event listener for Clear Bag button click
+        clearButton.addEventListener('click', function() {
+            itemList.innerHTML = ''; // Clear all items from the list
+            
+            // Save the updated shopping list items to local storage
+            saveItemsToLocalStorage();
+        });
+        
+        // Save the shopping list items to local storage
+        function saveItemsToLocalStorage() {
+            localStorage.setItem('shoppingListItems', itemList.innerHTML);
+        }
+    </script>
 </body>
 </html>
