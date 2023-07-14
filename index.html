@@ -112,6 +112,22 @@
       margin-top: 20px;
       width: 100%;
     }
+
+    .check-mark {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 1px solid #ddd;
+      margin-right: 10px;
+      cursor: pointer;
+      text-align: center;
+      line-height: 18px;
+    }
+
+    .check-mark.checked {
+      background-color: #4CAF50;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -214,7 +230,7 @@
     // Retrieve existing items for the list from local storage
     const storedItems = JSON.parse(localStorage.getItem(list.name)) || [];
     storedItems.forEach(item => {
-      createListItem(itemList, item.name, item.quantity);
+      createListItem(itemList, item.name, item.quantity, item.checked);
     });
 
     // Event listener for item submission
@@ -226,12 +242,13 @@
       const itemQuantity = itemQuantityInput.value;
 
       // Create a new list item
-      createListItem(itemList, itemName, itemQuantity);
+      createListItem(itemList, itemName, itemQuantity, false);
 
       // Save the updated list items to local storage
       const listItems = Array.from(itemList.children).map(li => ({
         name: li.querySelector('.item-name').textContent,
-        quantity: li.querySelector('.quantity').textContent
+        quantity: li.querySelector('.quantity').textContent,
+        checked: false
       }));
       localStorage.setItem(list.name, JSON.stringify(listItems));
 
@@ -247,14 +264,61 @@
       // Save the updated list items to local storage
       localStorage.removeItem(list.name);
     });
+
+    // Event listener for checking off an item
+    itemList.addEventListener('click', function(event) {
+      if (event.target.classList.contains('check-mark')) {
+        const listItem = event.target.parentNode;
+        const itemName = listItem.querySelector('.item-name').textContent;
+
+        // Remove the item from the list
+        itemList.removeChild(listItem);
+
+        // Save the updated list items to local storage
+        const listItems = Array.from(itemList.children).map(li => ({
+          name: li.querySelector('.item-name').textContent,
+          quantity: li.querySelector('.quantity').textContent,
+          checked: li.querySelector('.item-name').classList.contains('checked')
+        }));
+        localStorage.setItem(list.name, JSON.stringify(listItems));
+      } else if (event.target.classList.contains('item-name')) {
+        event.target.classList.toggle('checked');
+
+        // Save the updated list items to local storage
+        const listItems = Array.from(itemList.children).map(li => ({
+          name: li.querySelector('.item-name').textContent,
+          quantity: li.querySelector('.quantity').textContent,
+          checked: li.querySelector('.item-name').classList.contains('checked')
+        }));
+        localStorage.setItem(list.name, JSON.stringify(listItems));
+      }
+    });
+
+    // Event listener for updating quantity
+    itemList.addEventListener('input', function(event) {
+      if (event.target.classList.contains('quantity')) {
+        const listItem = event.target.parentNode;
+        const itemName = listItem.querySelector('.item-name').textContent;
+        const itemQuantity = event.target.textContent;
+
+        // Save the updated list items to local storage
+        const listItems = Array.from(itemList.children).map(li => ({
+          name: li.querySelector('.item-name').textContent,
+          quantity: li.querySelector('.quantity').textContent,
+          checked: li.querySelector('.item-name').classList.contains('checked')
+        }));
+        localStorage.setItem(list.name, JSON.stringify(listItems));
+      }
+    });
   }
 
   // Create a new list item in the UI
-  function createListItem(itemList, itemName, itemQuantity) {
+  function createListItem(itemList, itemName, itemQuantity, checked) {
     const li = document.createElement('li');
     li.innerHTML = `
-                <span class="item-name">${itemName}</span>
-                <span class="quantity">${itemQuantity}</span>
+                <span class="check-mark${checked ? ' checked' : ''}">&#10004;</span>
+                <span class="item-name${checked ? ' checked' : ''}">${itemName}</span>
+                <span class="quantity" contenteditable>${itemQuantity}</span>
             `;
 
     // Add the list item to the list
